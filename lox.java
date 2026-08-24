@@ -12,7 +12,13 @@ public class lox {
             System.out.println("Usage: jlox [script]");
             System.exit(64);
         }
-        else if {args.length == 1 ? runFile(args[0]) : runPrompt();}
+        else {
+            if (args.length == 1) {
+                runFile(args[0]);
+            } else {
+                runPrompt();
+            }
+        }
     }
     public static void runFile(String path) throws IOException {
         byte[] bytes = Files.readAllBytes(Paths.get(path));
