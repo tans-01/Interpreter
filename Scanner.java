@@ -1,7 +1,5 @@
-package src;
 import java.util.List;
 import java.util.ArrayList;
-
 public class Scanner {
     private final String source;
     private final List<Token> tokens = new ArrayList<>();

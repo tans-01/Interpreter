@@ -5,7 +5,6 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
-
 public class lox {
     public static void main(String[] args) throws IOException {
         if (args.length > 1) {
@@ -31,10 +30,15 @@ public class lox {
             System.out.print("> ");
             String line = reader.readLine();
             if (line == null) break;
+            run(line);
         }
     }
     public static void run (String source) {
-        
+        Scanner scanner = new Scanner(source);
+        List<Token> tokens = scanner.scanTokens();
+        for (Token token : tokens) {
+            System.out.println(token);
+        }
     }
 
 }
