@@ -68,27 +68,30 @@ public class Scanner {
             break;
 
         case '"':
-            if(match('"')) {
-                if(peek() == '\n' && !isAtEnd()) {
-                     advance();
-                } else {
-                    if (isAtEnd()) {
-                        // Unterminated string
-                    } else {
-                        if (peek() == '"') {
-                        advance();
-                        String value = source.substring(start + 1, current - 1);
-                        addToken(TokenType.STRING, value);
-                   
-                }
-
-
-                }
-                }
-            
+            while(peek() != '"' && !isAtEnd()) {
+                if (peek() == '\n') line++;
+                advance();
             }
+            if(isAtEnd()) {
+                return;
+                // Unterminated string.
         }
+            advance(); // The closing ".
+            String value = source.substring(start + 1, current - 1);
+            addToken(TokenType.STRING, value);
+            break;
+
+        default:
+            if(isDigit(c)) {
+                number();
+            } else {
+                // Error handling for unexpected character
+                return;
+
+
+            }
     }
+}
     private char advance() {
         return source.charAt(current++);
     }
@@ -110,6 +113,26 @@ public class Scanner {
         if (isAtEnd())
             return '\0';
         return source.charAt(current);
+    }
+
+    private void number() {
+        while(isDigit(peek())) {
+            advance();
+
+            if(peek() == '.' && isDigit(peeknext())) {
+                advance();
+
+                while(isDigit(peek())) advance();
+            }
+            addToken(TokenType.NUMBER, Double.parseDouble(source.substring(start, current)));
+        }
+    }
+    private char peeknext() {
+        if(current + 1 >= source.length()) return '\0';
+        return source.charAt(current + 1);
+    }
+    private boolean isDigit(char c) {
+        return c >= '0' && c <= '9';
     }
 }
     
