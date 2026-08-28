@@ -66,8 +66,27 @@ public class Scanner {
                 addToken(TokenType.SLASH);
             }
             break;
-           
 
+        case '"':
+            if(match('"')) {
+                if(peek() == '\n' && !isAtEnd()) {
+                     advance();
+                } else {
+                    if (isAtEnd()) {
+                        // Unterminated string
+                    } else {
+                        if (peek() == '"') {
+                        advance();
+                        String value = source.substring(start + 1, current - 1);
+                        addToken(TokenType.STRING, value);
+                   
+                }
+
+
+                }
+                }
+            
+            }
         }
     }
     private char advance() {
@@ -93,3 +112,5 @@ public class Scanner {
         return source.charAt(current);
     }
 }
+    
+
