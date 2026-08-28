@@ -1,24 +1,54 @@
-**interpreter** 
- * making interpreter with the help of the book crafting interpreters and adding some personal touch to the whole project, this interpreter is based on jlox which is lox but in java language.
+# Interpreter
 
-**NOTE -** this explanation is based on my personal understanding from the book and research.
+Building an interpreter with the help of the book *Crafting Interpreters*, adding some personal touches along the way. This interpreter is based on **jlox** — Lox, implemented in Java.
 
- # scanner
- The first part of the interpreter was understanding the scanner part of the interpreter which is also known as lexical analyzer.
- ## working of scanner
-* The scanner starts with two options which is file reading and prompt reading as coded in `lox.java` scanner can either read from the file directly or if you can interact via terminal and can stop with ctrl D
-* ctrl D is a proccess out of the interpreter meaning if ctrl D is pressed terminal will stop with inputs and the code will get a null thus stopping reading the new lines
+> **Note:** the explanations below are based on my own understanding from the book and further research.
 
-### file reader:
-with the help of the `Charset.defaultCharset()` it turn the incoming Bytes into readable characters 
-### prompt run:
-two inbuilt methods have been used here which is input stream read which converts the raw bytes into the readable character and the other one is buffer reader which instead of reading one char at a time it reads whole chunks at a time, which makes it much faster.
+## Scanner
 
-* To make it work in prompt run i wrapped the system.in which is the input that we get with the input reader and then that with the buffer reader.
+The first part of the interpreter is the **scanner** (also known as the *lexical analyzer*). Its job is to turn raw source code into a flat list of tokens.
+
+### How the scanner starts
+
+The scanner supports two modes, both driven from `lox.java`:
+- **File mode** — reads and scans an entire `.lox` file at once
+- **Prompt mode (REPL)** — reads and scans one line at a time, interactively, from the terminal
+
+Prompt mode is stopped with **Ctrl+D**. Pressing Ctrl+D signals "end of input" to the terminal, which closes the input stream — `readLine()` then returns `null`, which the REPL loop checks for to stop reading further lines.
+
+### File reader
+
+Using `Charset.defaultCharset()`, the raw bytes read from the file are decoded into readable characters (a `String`).
+
+### Prompt reader
+
+Two built-in classes are used here:
+- `InputStreamReader` — converts the raw bytes coming from `System.in` into readable characters
+- `BufferedReader` — wraps the `InputStreamReader` and reads in larger chunks rather than one character at a time, which is both more convenient (`readLine()`) and more efficient
+
+To make this work, `System.in` is wrapped in an `InputStreamReader`, which is then wrapped in a `BufferedReader`.
 
 ## Tokens
-* Tokens has 4 field which is type, lexeme, literal, line.
-1. Type- tells us about the token type wether if its a semicolon or a comma or anyother pre registered token
-2. lexeme- it is the indivisual letter of the whole word like v in the "var"
-3. literal- literal is the the value of the lexeme for eg. "4" the literal will be 4
-4. line- line is the int value which gives us the current line number.
+
+A `Token` has 4 fields: `type`, `lexeme`, `literal`, and `line`.
+
+1. **type** — the token's category, e.g. `SEMICOLON`, `COMMA`, or any other pre-registered `TokenType`
+2. **lexeme** — the raw text of the *entire* token, e.g. the whole word `var`, not a single letter
+3. **literal** — the actual value behind a literal token, e.g. for the text `"4"`, the literal is the number `4`
+4. **line** — the line number the token was found on
+
+## `scanToken()`
+
+`scanToken()` is the heart of the scanner — this is where the actual recognition happens. It checks for reserved symbols like `(`, `)`, and multi-character cases like `==`, and also identifies more complex token types (`NUMBER`, `STRING`, `IDENTIFIER`) with the help of several helper methods: `peek()`, `peekNext()`, `isDigit()`, `isAlpha()`, and others.
+
+### `TokenType.STRING`
+
+To scan a string, the scanner consumes characters until it finds the closing double quote (`"`). The lexeme's actual value is then extracted using `start + 1` and `current - 1` (trimming off the surrounding quotes), and that value is stored as the token's literal.
+
+### `TokenType.NUMBER`
+
+`isDigit()` checks whether a character falls between `0` and `9`. If so, `number()` takes over: it consumes all the leading digits, and if it then finds a `.`, it uses `peekNext()` to look one character *past* the dot — this way, the decimal point is only consumed if there's actually a digit after it (avoiding accidentally consuming a `.` that isn't part of a number). `Double.parseDouble()` is then used to convert the matched text into a primitive `double`.
+
+### `TokenType.IDENTIFIER`
+
+If the character isn't a digit, the scanner checks whether it's alphabetic (`a–z`, `A–Z`, or `_`). If so, it scans the rest of the word as long as characters remain alphanumeric, then looks the resulting word up in the `keywords` map. If it matches a reserved word, it's classified as that specific keyword; otherwise, it's a generic `IDENTIFIER`.

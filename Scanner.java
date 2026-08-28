@@ -75,9 +75,9 @@ public class Scanner {
                 advance();
             }
             if(isAtEnd()) {
+                lox.error(line, "Unterminated string.");
                 return;
-                // Unterminated string.
-        }
+            }
             advance(); // The closing ".
             String value = source.substring(start + 1, current - 1);
             addToken(TokenType.STRING, value);
@@ -91,7 +91,7 @@ public class Scanner {
                 identifier();
 
             } else {
-                // Error handling for unexpected character
+                lox.error(line, "Unexpected character.");
                 return;
 
             }
@@ -136,8 +136,9 @@ public class Scanner {
 
                 while(isDigit(peek())) advance();
             }
-            addToken(TokenType.NUMBER, Double.parseDouble(source.substring(start, current)));
+           
         }
+         addToken(TokenType.NUMBER, Double.parseDouble(source.substring(start, current)));
     }
     private char peeknext() {
         if(current + 1 >= source.length()) return '\0';

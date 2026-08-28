@@ -41,4 +41,8 @@ public class lox {
         }
     }
 
+    static void error(int line, String msg) {
+        System.err.println("[line " + line + "] Error: " + msg);
+    }
+
 }
