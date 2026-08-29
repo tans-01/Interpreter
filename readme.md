@@ -52,3 +52,5 @@ To scan a string, the scanner consumes characters until it finds the closing dou
 ### `TokenType.IDENTIFIER`
 
 If the character isn't a digit, the scanner checks whether it's alphabetic (`a–z`, `A–Z`, or `_`). If so, it scans the rest of the word as long as characters remain alphanumeric, then looks the resulting word up in the `keywords` map. If it matches a reserved word, it's classified as that specific keyword; otherwise, it's a generic `IDENTIFIER`.
+
+# AST:
