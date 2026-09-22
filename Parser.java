@@ -7,10 +7,10 @@ class Parser {
     Parser(List<Token> tokens) {
         this.tokens = tokens;
     }
-    private Expr expression() {
+    Expr expression() {
         return equality();
     }
-    private Expr equality() {
+    public Expr equality() {
         Expr expr = comparison();
         while(match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
             Token operator = previous();
