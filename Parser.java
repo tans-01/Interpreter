@@ -1,5 +1,5 @@
 import java.util.List;
-
+import java.util.ArrayList;
 class Parser {
     private final List<Token> tokens;
     int current = 0;
@@ -7,9 +7,27 @@ class Parser {
     Parser(List<Token> tokens) {
         this.tokens = tokens;
     }
+
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()) {
+            statements.add(statement());
+        }
+        return statements;
+    }
+    private Stmt statement() {
+        return expressionstatement();
+    }
+    private Stmt expressionstatement() {
+        Expr expr = expression();
+        consume(TokenType.SEMICOLON, "Expected ';' after expression.");
+        return new Stmt.Expression(expr);
+    }
+
     Expr expression() {
         return equality();
     }
+
     public Expr equality() {
         Expr expr = comparison();
         while(match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {

@@ -18,7 +18,10 @@ public class GenerateAst {
         "Literal  : Object value",
         "Unary    : Token operator, Expr right" 
       ));
-
+       defineAst(outputDir, "Stmt", Arrays.asList(
+      "Expression : Expr expression",
+      "Var      : Token name, Expr initializer"
+    ));
       
     
 }
@@ -30,7 +33,7 @@ private static void defineAst(String outputDir, String baseName, List<String> ty
     writer.println();
     writer.println("abstract class " + baseName + " {");
     defineVisitor(writer, baseName, types);
-    
+
     for (String type : types) {
         String className = type.split(":")[0].trim();
         String fields = type.split(":")[1].trim();
