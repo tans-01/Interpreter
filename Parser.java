@@ -11,10 +11,29 @@ class Parser {
     List<Stmt> parse() {
         List<Stmt> statements = new ArrayList<>();
         while (!isAtEnd()) {
-            statements.add(statement());
+            statements.add(declaration());
         }
         return statements;
     }
+
+    private Stmt declaration() {
+        if (match(TokenType.VAR)) {
+            return vardeclaration();
+        }
+        return statement();
+    }
+
+    private Stmt vardeclaration() {
+        Token name = consume(TokenType.IDENTIFIER, "Expected variable name.");
+        
+        Expr initializer = null;
+        if(match(TokenType.EQUAL)) {
+            initializer = expression();
+        }
+        consume(TokenType.SEMICOLON, "Expected ';' after variable declaration.");
+        return new Stmt.Var(name, initializer);
+    }
+
     private Stmt statement() {
         return expressionstatement();
     }
@@ -79,10 +98,15 @@ class Parser {
         if (match(TokenType.FALSE)) return new Expr.Literal(false);
         if (match(TokenType.TRUE)) return new Expr.Literal(true);
         if (match(TokenType.NIL)) return new Expr.Literal(null);
-
+        
         if (match(TokenType.NUMBER, TokenType.STRING)) {
             return new Expr.Literal(previous().literal);
         }
+
+        if (match(TokenType.IDENTIFIER)) {
+            return new Expr.Varriable(previous());
+        }
+        
         if(match(TokenType.LEFT_PAREN)) {
             Expr expr = expression();
 

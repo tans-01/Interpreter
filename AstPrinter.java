@@ -20,6 +20,10 @@ class AstPrinter implements Expr.Visitor<String> {
         return parenthesize(expr.operator.lexeme, expr.right);
     }
 
+    public String visitVarriableExpr(Expr.Varriable expr) {
+        return expr.name.lexeme;
+    }
+
     private String parenthesize(String name, Expr... exprs) {
         StringBuilder builder = new StringBuilder();
         builder.append("(").append(name);
@@ -39,7 +43,17 @@ class AstPrinter implements Expr.Visitor<String> {
     Scanner scanner = new Scanner(source);
     List<Token> tokens = scanner.scanTokens();
     Parser parser = new Parser(tokens);
-    Expr expr = parser.expression();
-    System.out.println(new AstPrinter().print(expr));
+    List<Stmt> statements = parser.parse();
+
+    for (Stmt stmt : statements) {
+        if (stmt instanceof Stmt.Var varStmt) {
+            System.out.println("Var: " + varStmt.name.lexeme + " = " + 
+                (varStmt.initializer != null ? new AstPrinter().print(varStmt.initializer) : "null"));
+        } else if (stmt instanceof Stmt.Expression exprStmt) {
+            System.out.println("Expr statement: " + new AstPrinter().print(exprStmt.expression));
+        }
+    }
 }
+
+    
 }
